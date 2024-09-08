@@ -15,12 +15,16 @@ _run:
     # set stack
     movw $STACK_TOP, %sp 
     movw $STACK_TOP, %bp
-_xd:
+    # loading kernel boot
+    movb %dl, _disk_sector
+    movw $0, %ax
+    movb _disk_sector, %al
+    jmp .
 
-    movb $0x0e, %ah
-    movb $104, %al
-    int $0x10
-	jmp	.
+_bootloader_msg:
+    .asciz "botloader loader kernel boot \n"
+_disk_sector:
+    .byte 0
 
 .org 510, 0
 .word 0xaa55 
