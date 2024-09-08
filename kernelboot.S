@@ -8,4 +8,4 @@ _kernelboot_start:
     int $0x10
 	jmp	.
 
-.org 0x800, 0
+.org 0x8000, 255

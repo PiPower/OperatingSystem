@@ -19,13 +19,13 @@ ${BUILDDIR}/%.bin: ${BUILDDIR}/%.elf
 	${OBJCOPY} -O binary $< $@
 
 ${BUILDDIR}/kernelcore.img: ${BUILDDIR}/bootloader.bin ${BUILDDIR}/kernelboot.bin
-	cat $^ /dev/zero | head -c 20480 > $@
-
+	cat $^ /dev/zero | head -c 1474560 > $@
+	
 ${BUILDDIR}/bootloader.iso: ${BUILDDIR}/kernelcore.img
 	rm -rf ${IMG_DIR}
 	mkdir ${IMG_DIR} ${IMG_DIR}/boot
 	mv ${BUILDDIR}/kernelcore.img ${IMG_DIR}/boot
-	${ISOGEN} -no-emul-boot -boot-load-size 4 -input-charset utf-8 -iso-level 2 -J -R -o $@ -b boot/kernelcore.img ${IMG_DIR}
+	${ISOGEN} -input-charset utf-8 -iso-level 3 -J -R -o $@ -b boot/kernelcore.img ${IMG_DIR}
 
 
 clean:
