@@ -12,13 +12,13 @@ all: ${BUILDDIR}/bootloader.iso
 ${BUILDDIR}/%.o: %.S
 	${GCC} ${GCC_FLAGS} $< -o $@
 
-${BUILDDIR}/boot.elf: ${BUILDDIR}/boot.o
+${BUILDDIR}/%.elf: ${BUILDDIR}/%.o
 	${LD} ${KERNEL_LDFLAGS} -Ttext 0 $< -o $@
 
-${BUILDDIR}/bootloader.bin: ${BUILDDIR}/boot.elf
+${BUILDDIR}/%.bin: ${BUILDDIR}/%.elf
 	${OBJCOPY} -O binary $< $@
 
-${BUILDDIR}/kernelcore.img: ${BUILDDIR}/bootloader.bin
+${BUILDDIR}/kernelcore.img: ${BUILDDIR}/bootloader.bin ${BUILDDIR}/kernelboot.bin
 	cat ${BUILDDIR}/bootloader.bin /dev/zero | head -c 2048 > $@
 
 ${BUILDDIR}/bootloader.iso: ${BUILDDIR}/kernelcore.img

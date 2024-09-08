@@ -1,9 +1,9 @@
 .code16
 .text
-.global _start
+.global _bootloader_start
 .set BOOTLOAD_SECTOR, 0x07c0
 .set STACK_TOP, 0x7DFF
-_start:
+_bootloader_start:
     # set cs = BOOTLOAD_SECTOR and ip to be in refrence to this file
     ljmp $BOOTLOAD_SECTOR, $_run
 _run:
