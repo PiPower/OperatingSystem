@@ -1,4 +1,4 @@
-#include "memory_map.h"
+#include "memory_layout.h"
 
 .code16
 .text
