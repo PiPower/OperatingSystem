@@ -8,6 +8,9 @@ BUILDDIR=build
 IMG_DIR=${BUILDDIR}/image
 C_SRCs =  main.c
 KERN_DEPS = ${BUILDDIR}/main.o
+DATA_SECTIONS = --remove-section=.text
+TEXT_SECTIONS = --only-section=.text
+
 all: ${BUILDDIR}/bootloader.iso
 
 ${BUILDDIR}/%.o: %.S
@@ -17,17 +20,19 @@ ${BUILDDIR}/%.o: %.c
 	${GCC} ${GCC_FLAGS} $< -o $@
 
 ${BUILDDIR}/bootloader.elf: ${BUILDDIR}/bootloader.o
-	${LD} ${KERNEL_LDFLAGS} -Ttext 0 $< -o $@
+	${LD}  -Ttext 0 $< -o $@
 
 ${BUILDDIR}/bootloader.bin: ${BUILDDIR}/bootloader.elf
 	${OBJCOPY} -O binary $< $@
 
 
 ${BUILDDIR}/kernelboot.elf: ${BUILDDIR}/kernelboot.o ${KERN_DEPS}
-	${LD} ${KERNEL_LDFLAGS} -Ttext 0 $^ -o $@
+	${LD}  -T setup.ld $^ -o $@
 
 ${BUILDDIR}/kernelboot.bin: ${BUILDDIR}/kernelboot.elf
-	${OBJCOPY} -O binary $< $@
+	${OBJCOPY} -O binary  ${DATA_SECTIONS} $< ${BUILDDIR}/data.bin
+	${OBJCOPY} -O binary  ${TEXT_SECTIONS} $< ${BUILDDIR}/text.bin
+	cat ${BUILDDIR}/text.bin ${BUILDDIR}/data.bin > $@
 
 ${BUILDDIR}/kernelcore.img: ${BUILDDIR}/bootloader.bin ${BUILDDIR}/kernelboot.bin
 	cat $^ /dev/zero | head -c 1474560 > $@

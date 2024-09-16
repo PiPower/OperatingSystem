@@ -122,6 +122,7 @@ map_entries:
    .space (20*10), 0
 
 .code32
+.extern msg
 _32bit_mode:
     # set segments to data segment
     movw $16, %ax
