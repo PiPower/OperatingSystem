@@ -7,7 +7,7 @@ _bootloader_start:
     # set cs = BOOTLOAD_SECTOR and ip to be in refrence to this file
     ljmp $BOOTLOAD_SECTOR, $_run
 _run:
-    cli
+    cli # disable interrupts
     # set segment registers
     movw $BOOTLOAD_SECTOR, %ax
     movw %ax, %ds
@@ -18,7 +18,7 @@ _run:
     movw $BOOTLOADER_STACK_TOP, %sp 
     movw $BOOTLOADER_STACK_TOP, %bp
 
-    sti # disable interrupts
+    sti # enable interrupts
     cld 
 _load_kernelloader:
     movw $KERNELLOADER_SEGMENT, %ax
