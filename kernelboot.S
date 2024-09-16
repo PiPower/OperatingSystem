@@ -78,13 +78,19 @@ _go_to_pm:
     outb %al, $0x21 # Mask all but cascade on the primary PIC 
 	movb $0x00, %al
     outb %al, $0x80 # delay so that NMI can be in effect
+    movb $0x65, %ah
 
-    lgdt gdt_init
+    lgdtl gdt_init
     jmp	1f # Short jump to serialize on 386/486
 1:
-    .byte	0x66, 0xea		# ljmp ptr16:32
-    .long  (KERNELLOADER_MEM_BASE + 0x1cc)
+    movl %cr0, %edx
+	orb	$0x1 , %dl	# Protected mode
+	movl %edx, %cr0
+
+    .byte 0x66, 0xea		# ljmp ptr16:32
+    .long (_32bit_mode + KERNELLOADER_MEM_BASE)
     .word 8
+ 
 
 _failure:
     movb $0x0e, %ah
@@ -116,10 +122,20 @@ map_entries_size:
 map_entries:
    .space (20*10), 0
 
-.section ".text32", "ax"
 .code32
-.byte 0xcc
 _32bit_mode:
-    jmp .
+    # set segments to data segment
+    movw $16, %ax
+	movw %ax, %ds	
+	movw %ax, %es
+    movw %ax, %fs
+    movw %ax, %gs
+	movw %ax, %ss
+    
+    movl $0x30000, %esp
+    movl $0x30000, %ebp
+
+    movb $0x65, %ah
+    movb %ah, 0xb8000
     call main
 
