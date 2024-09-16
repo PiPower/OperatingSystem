@@ -2,10 +2,9 @@
 
 .code16
 .text
-.global _kernelboot_start
 .extern main
-
-_kernelboot_start:
+.global _start
+_start:
     #set segment registers
     movw $KERNELLOADER_SEGMENT, %ax
     movw %ax, %ds
@@ -21,7 +20,7 @@ _memtest:
     movw $0x0, %bx
     movl $0x534D4150, %edx
     movw $map_entries, %di # entries have to fit within first 65 kb range
-_call_mmap_int:
+_call_mmap_init:
     movl $0x40, %ecx
     movl $0xe820, %eax
     clc
@@ -34,7 +33,7 @@ _call_mmap_int:
     # ebx != 10 so it is not the last entry
     movl %ebx, map_entries_size
     add $10, %di
-    jmp _call_mmap_int
+    jmp _call_mmap_init
 
 _a20_line:
     mov $0x2403, %ax # A20-Gate Support
@@ -106,7 +105,7 @@ gdt:
 	.word	0xffff, 0x0000, 0x9200, 0x00cf	# seg 2 - kernel flat 4GB data
 	.word	0xffff, 0x0000, 0xfa00, 0x00cf	# seg 3 - user flat 4GB code
 	.word	0xffff, 0x0000, 0xf200, 0x00cf	# seg 4 - user flat 4GB data
-	.word	0x0068, (tss- _kernelboot_start),0x8901, 0x00cf  # seg 5 - TSS
+	.word	0x0068, (tss- _start),0x8901, 0x00cf  # seg 5 - TSS
 
 gdt_init:
 	.word	gdt_init-gdt - 1
