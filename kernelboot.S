@@ -13,6 +13,20 @@ _start:
     # set stack
     movw $KERNELLOADER_STACK_TOP, %sp
     movw $KERNELLOADER_STACK_TOP, %bp
+_check_VGA:
+    movw $0x1200, %ax
+    movb $0x10, %bl
+    int $0x10
+
+    cmp $0x10, %bl
+    je _failure # Adapter is CGA
+
+    movw $0x1a00, %ax
+    movb $0x10, %bl
+    int $0x10
+    cmp $0x08, %bl # 0x08 is code for VGA with analog color display
+    jne _failure # Unsupported adapter
+
 _memtest:
     # adress of entries array is KERNELLOADER_SEGMENT + entries_offset
     movw $KERNELLOADER_SEGMENT, %ax

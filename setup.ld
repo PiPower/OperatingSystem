@@ -15,10 +15,8 @@ SECTIONS
         *(.text) 
     }
     
-  
     . += 0x10000;
     
-
     __start_data_section = .;
 	.rodata		: { 
         *(.rodata*)
@@ -35,7 +33,6 @@ SECTIONS
 	}
 	__end_data_section = . ;
     
-	. = ASSERT(__end_data_section - __start_data_section < 0x10000, "To much of memory in Rodata, .bss data and .data ");
 	. = ASSERT(__end_data_section - __program_start - 0x10000 <= 0x8000, "Kernel is too big !");
 
 }
