@@ -1,5 +1,6 @@
 #ifndef BOOT_INFO
 #define BOOT_INFO
+#include "kernel/types.h"
 
 #define Undefined 0x00 // set if not equal to any address range 
 #define AddressRangeMemory 0x01
@@ -10,17 +11,19 @@
 #define AddressRangeUnusuable 0x05
 #define AddressRangeDisabled 0x06
 
+#define MAX_ENTRIES 16
 
 typedef struct memory_map_entry
 {
-    char low_base_address[4];
-    char high_base_address[4];
-    char low_length[4];
-    char high_length[4];
-    char range_type[4];
+    uint32_t low_base_address;
+    uint32_t high_base_address;
+    uint32_t low_length;
+    uint32_t high_length;
+    uint32_t range_type;
 } memory_map_entry_t;
 
 // creater in kernelboot.S
-extern memory_map_entry_t entries[];
+extern uint16_t map_entries_size;
+extern memory_map_entry_t map_entries[];
 
 #endif

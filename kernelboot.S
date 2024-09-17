@@ -1,4 +1,5 @@
 #include "memory_layout.h"
+#define MAX_ENTRIES 16
 
 .code16
 .text
@@ -26,7 +27,6 @@ _check_VGA:
     int $0x10
     cmp $0x08, %bl # 0x08 is code for VGA with analog color display
     jne _failure # Unsupported adapter
-
 _memtest:
     # adress of entries array is KERNELLOADER_SEGMENT + entries_offset
     movw $KERNELLOADER_SEGMENT, %ax
@@ -34,22 +34,22 @@ _memtest:
     movw $0x0, %bx
     movl $0x534D4150, %edx
     movw $map_entries, %di # entries have to fit within first 65 kb range
+    movw $0, %si # init counter
 _call_mmap_init:
     movl $0x40, %ecx
     movl $0xe820, %eax
     clc
     int $0x15
-    jc _a20_line 
+    addw $1, %si
+    jc _a20_line  
     cmpl $0, %ebx # cmpl may change carry flag so it is tested second
     je _a20_line 
-    cmpl $10, %ebx # max 10 entries in table
+    cmpw $MAX_ENTRIES, %si # jump if MAX_ENTRIES entries in table
     je _a20_line
-    # ebx != 10 so it is not the last entry
-    movl %ebx, map_entries_size
-    add $10, %di
+    add $0x14, %di # offset entries buffer pointer
     jmp _call_mmap_init
-
 _a20_line:
+    movw %si, map_entries_size # store number of entries 
     mov $0x2403, %ax # A20-Gate Support
     int $0x15
     jb  _failure # INT 15h is not supported
@@ -104,7 +104,6 @@ _go_to_pm:
     .long (_32bit_mode + KERNELLOADER_MEM_BASE)
     .word 8
  
-
 _failure:
     movb $0x0e, %ah
     movb $0x46, %al
@@ -128,12 +127,13 @@ gdt_init:
 tss:
 	.long	0
 
+.global map_entries_size
 map_entries_size:
     .word 0
-    .word 255
 
+.global map_entries
 map_entries:
-   .space (20*10), 0
+   .space (20 * MAX_ENTRIES), 0
 
 .code32
 .extern msg
@@ -146,10 +146,8 @@ _32bit_mode:
     movw %ax, %gs
 	movw %ax, %ss
     
-    movl $0x30000, %esp
-    movl $0x30000, %ebp
+    movl $0x90000, %esp
+    movl $0x90000, %ebp
 
-    movb $0x65, %ah
-    movb %ah, 0xb8000
     call main
 
