@@ -22,13 +22,15 @@ void print_at(char c, uint8_t row, uint8_t col)
 void printh_uint(uint32_t number, uint8_t start_row, uint8_t start_column, char add_prefix)
 {
     uint8_t row = start_row;
-    uint8_t col = start_column + 2;
-    if( col >= MAX_COLS){ col = 0; row++;}
-    if( row >= MAX_ROWS){ row = 0;}
+    uint8_t col = start_column;
     if(add_prefix)
     {
+        col += 2;
         print_str("0x", start_row , start_column);
     }
+
+    if( col >= MAX_COLS){ col = 0; row++;}
+    if( row >= MAX_ROWS){ row = 0;}
     int i =0;
     while (i < 8 )
     {
@@ -99,18 +101,20 @@ void print_memory_zones(uint8_t start_row)
     for(i =0; i < count; i++)
     {
         printh_uint(zone_entries[i].high_base_address, start_row + i + 1, start_column, 1);
-        printh_uint(zone_entries[i].low_base_address, start_row + i + 1, start_column + 8, 0);
-        print_at('-', start_row + i + 1, start_column + 18);
-        printh_uint(zone_entries[i].high_length, start_row + i + 1, start_column + 19, 1);
-        printh_uint(zone_entries[i].low_length, start_row + i + 1, start_column + 27, 0);
+        print_at(':', start_row + i + 1, start_column + 10);
+        printh_uint(zone_entries[i].low_base_address, start_row + i + 1, start_column + 11, 0);
+        print_at('-', start_row + i + 1, start_column + 19);
+        printh_uint(zone_entries[i].high_length, start_row + i + 1, start_column + 20, 1);
+        print_at(':', start_row + i + 1, start_column + 30);
+        printh_uint(zone_entries[i].low_length, start_row + i + 1, start_column + 31, 0);
 
         if(zone_entries[i].range_type > 0 && zone_entries[i].range_type <= AddressRangeDisabled)
         {
-            print_str(addr_desc_type[zone_entries[i].range_type], start_row + i + 1, start_column + 37 );
+            print_str(addr_desc_type[zone_entries[i].range_type], start_row + i + 1, start_column + 38 );
         }
         else
         {
-            print_str(addr_desc_type[0], start_row + i + 1, start_column + 37 );
+            print_str(addr_desc_type[0], start_row + i + 1, start_column + 38 );
         }
     }
 
