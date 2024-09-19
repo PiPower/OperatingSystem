@@ -6,9 +6,9 @@ GCC_FLAGS=-Wall -c -ffreestanding -fno-pie
 ISOGEN=genisoimage
 BUILDDIR=build
 IMG_DIR=${BUILDDIR}/image
-KERN_DEPS = ${BUILDDIR}/main.o ${BUILDDIR}/print.o
-DATA_SECTIONS = --remove-section=.text
-TEXT_SECTIONS = --only-section=.text
+KERN_DEPS = ${BUILDDIR}/main.o ${BUILDDIR}/print.o ${BUILDDIR}/paging.o
+DATA_SECTIONS = --remove-section=.kernel_boot
+TEXT_SECTIONS = --only-section=.kernel_boot
 
 all: ${BUILDDIR}/bootloader.iso
 

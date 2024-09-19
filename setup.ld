@@ -11,12 +11,14 @@ SECTIONS
 {
 	. = 0;
     __program_start = .;
-        .text		: { 
-        *(.text) 
+        .kernel_boot : { 
+        *(.kernel_boot) 
     }
     
     . += 0x10000;
-    
+      .text		: { 
+        *(.text) 
+    }
     __start_data_section = .;
 	.rodata		: { 
         *(.rodata*)

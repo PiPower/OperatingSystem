@@ -2,7 +2,7 @@
 #define MAX_ENTRIES 16
 
 .code16
-.text
+.section ".kernel_boot", "ax"
 .extern main
 .global _start
 _start:
@@ -137,6 +137,7 @@ map_entries:
 
 .code32
 .extern msg
+
 _32bit_mode:
     # set segments to data segment
     movw $16, %ax
@@ -148,6 +149,7 @@ _32bit_mode:
     
     movl $0x90000, %esp
     movl $0x90000, %ebp
-
-    call main
+    
+    movl $main, %eax
+    call %eax
 
