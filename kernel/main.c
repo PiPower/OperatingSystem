@@ -1,12 +1,17 @@
 #include "../memory_mappings.h"
 #include "../memory_layout.h"
 #include "vga.h"
+#include "paging.h"
 
 const char* msg = "Hello world from THE kernel!!";
 
-void main()
+void  main() 
 {
-    char* video_mem = (char*)CHAR_ADDRESS;
+    setup_paging();
+    
+    char* xd =(char* ) PAGE_TABLE_ADDR;
+    *xd = 0xaa;
+
     int i =0;
     while (msg[i] != '\0')
     {
@@ -15,7 +20,7 @@ void main()
     }
 
     print_memory_zones(1);
-
+    
     while (1)
     {
       

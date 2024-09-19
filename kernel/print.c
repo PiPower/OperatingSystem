@@ -55,7 +55,7 @@ void printh_uint(uint32_t number, uint8_t start_row, uint8_t start_column, char 
 }
 
 
-void print_str(char* str, uint8_t start_row, uint8_t start_column)
+void print_str(const char* str, uint8_t start_row, uint8_t start_column)
 {
 
     uint8_t row = start_row;
@@ -110,11 +110,11 @@ void print_memory_zones(uint8_t start_row)
 
         if(zone_entries[i].range_type > 0 && zone_entries[i].range_type <= AddressRangeDisabled)
         {
-            print_str(addr_desc_type[zone_entries[i].range_type], start_row + i + 1, start_column + 38 );
+            print_str(addr_desc_type[zone_entries[i].range_type], start_row + i + 1, start_column + 39 );
         }
         else
         {
-            print_str(addr_desc_type[0], start_row + i + 1, start_column + 38 );
+            print_str(addr_desc_type[0], start_row + i + 1, start_column + 39 );
         }
     }
 

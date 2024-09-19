@@ -6,7 +6,7 @@ GCC_FLAGS=-Wall -c -ffreestanding -fno-pie
 ISOGEN=genisoimage
 BUILDDIR=build
 IMG_DIR=${BUILDDIR}/image
-KERN_DEPS = ${BUILDDIR}/main.o ${BUILDDIR}/print.o ${BUILDDIR}/paging.o
+KERN_DEPS = ${BUILDDIR}/main.o ${BUILDDIR}/print.o ${BUILDDIR}/paging.o ${BUILDDIR}/misc.o 
 DATA_SECTIONS = --remove-section=.kernel_boot
 TEXT_SECTIONS = --only-section=.kernel_boot
 
@@ -17,6 +17,9 @@ ${BUILDDIR}/%.o: %.S
 
 ${BUILDDIR}/%.o: kernel/%.c
 	${GCC} ${GCC_FLAGS} $< -o $@
+
+${BUILDDIR}/%.o: kernel/%.S
+	${GCC} ${GCC_FLAGS}  $< -o $@
 
 ${BUILDDIR}/bootloader.elf: ${BUILDDIR}/bootloader.o
 	${LD}  -Ttext 0 $< -o $@
