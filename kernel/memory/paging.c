@@ -1,6 +1,6 @@
 #include "paging.h"
-#include "types.h"
-#include "vga.h"
+#include "../types.h"
+#include "../vga.h"
 /*
     bit indicies of specified options within PDE/PTE
     every option except for available(4 bit) is 1 bit long
@@ -56,7 +56,13 @@
 typedef uint32_t page_table_t;
 typedef uint32_t page_dir_t;
 
-void start_paging();
+static void start_paging(uint32_t page_dir)
+{
+    asm volatile("movl %0, %%cr3" :: "r"(page_dir));
+    asm volatile("movl %cr0, %eax");
+    asm volatile("orl $0x80000000, %eax") ;
+    asm volatile("movl %eax, %cr0");
+}
 
 void setup_paging()
 {
@@ -95,6 +101,9 @@ void setup_paging()
         page_table += 1;
     }
 
-    start_paging();
+    page_table -=1 ;
+    *page_table = const_flags | SET_T_ADDRESS(0);
+
+    start_paging(PAGE_DIR_ADDR);
     return;
 }   

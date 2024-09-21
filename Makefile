@@ -6,7 +6,7 @@ GCC_FLAGS=-Wall -c -ffreestanding -fno-pie
 ISOGEN=genisoimage
 BUILDDIR=build
 IMG_DIR=${BUILDDIR}/image
-KERN_DEPS = ${BUILDDIR}/main.o ${BUILDDIR}/print.o ${BUILDDIR}/paging.o ${BUILDDIR}/misc.o 
+KERN_DEPS = ${BUILDDIR}/main.o ${BUILDDIR}/print.o ${BUILDDIR}/memory/paging.o ${BUILDDIR}/memory/memory.o ${BUILDDIR}/memory/acpi.o
 DATA_SECTIONS = --remove-section=.kernel_boot
 TEXT_SECTIONS = --only-section=.kernel_boot
 
@@ -45,9 +45,12 @@ ${BUILDDIR}/bootloader.iso: ${BUILDDIR}/kernelcore.img
 	mv ${BUILDDIR}/kernelcore.img ${IMG_DIR}/boot
 	${ISOGEN} -input-charset utf-8 -iso-level 3 -J -R -o $@ -b boot/kernelcore.img ${IMG_DIR}
 
+prepare:
+	mkdir ${BUILDDIR}/memory
 
 clean:
 	rm -rf ${BUILDDIR}/*.o 
 	rm -rf ${BUILDDIR}/*.elf
 	rm -rf ${BUILDDIR}/*.bin
 	rm -rf ${BUILDDIR}/image
+	rm -rf ${BUILDDIR}/memory/*
