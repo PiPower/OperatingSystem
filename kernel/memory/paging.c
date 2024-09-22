@@ -1,6 +1,7 @@
 #include "paging.h"
 #include "../types.h"
 #include "../vga.h"
+#include "memory.h"
 /*
     bit indicies of specified options within PDE/PTE
     every option except for available(4 bit) is 1 bit long
@@ -106,4 +107,4 @@ void setup_paging()
 
     start_paging(PAGE_DIR_ADDR);
     return;
-}   
+}

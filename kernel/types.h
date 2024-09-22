@@ -11,4 +11,11 @@ typedef unsigned int uint32_t;
 typedef unsigned short int uint16_t;
 typedef unsigned char uint8_t;
 
+typedef struct quadword 
+{
+    uint32_t low;
+    uint32_t high;
+} quadword_t;
+
+typedef quadword_t quadword_ptr;
 #endif

@@ -1,4 +1,5 @@
 #include "acpi.h"
+#include "../vga.h"
 #define RSDP_SIZE 20 // base rsdp
 #define eRSDP_SIZE 36 // extendet rsdp 
 
@@ -67,3 +68,44 @@ rsdp_t* find_rsdp()
 
     return 0x00;
 }
+
+void parse_system_descriptor_table( rsdp_t* rsdp)
+{
+    if(rsdp->revision > 0 &&  rsdp->e_hi_address > 0 )
+    {
+        print_str("ERROR: xsdt is at address beyond 4GB what is not supported", 16,0);
+        while (1){}  
+    }
+
+    sdt_header_t* sdt_header = (sdt_header_t* )( rsdp->revision == 0 ? rsdp->rsdt_address : rsdp->e_low_address ); 
+    char* entry = (char*)sdt_header + 36; // first entry 
+    char* entry_mem_bound = (char*)sdt_header + sdt_header->lenght - 36; // first entry 
+    uint8_t increment = rsdp->revision == 0 ? 4 : 8;
+    while (entry < entry_mem_bound)
+    {
+        
+    }
+
+}
+
+/*
+void init_memory_subsystem()
+{
+    rsdp_t* rsdp = find_rsdp();
+
+    if(rsdp)
+    {
+        print_str("rsdp has been found", 12, 0);
+        printh_uint((uint32_t)rsdp, 13, 0, 1);
+    }
+    else
+    {
+        print_str("ERROR: rsdp has NOT been found", 12, 0);
+        while (1){}
+        
+    }
+
+    parse_system_descriptor_table(rsdp);
+    
+}
+*/

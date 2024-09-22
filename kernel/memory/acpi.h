@@ -23,6 +23,21 @@ typedef struct rsdp
     char  e_reserved[3];
 } rsdp_t;
 
+
+typedef struct sdt_header
+{
+    char signature[4];
+    uint32_t lenght;
+    uint8_t revision;
+    uint8_t checksum;
+    char OEMID[6];
+    char OEMID_table_id[8];
+    uint32_t OEM_revision;
+    uint32_t creator_id;
+    uint32_t creator_revision;
+} sdt_header_t;
+
 rsdp_t* find_rsdp();
+void parse_system_descriptor_table( rsdp_t* rsdp);
 
 #endif
