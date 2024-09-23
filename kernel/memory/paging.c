@@ -74,11 +74,10 @@ void setup_paging()
     for(i =0; i < PAGE_TABLE_ENTRIES; i++ )
     {
         page_dir[i] = 0x00; // set page  dir to nonpresent
-        i++;
     }
     
     page_table_t* page_table = (page_table_t*)heap_kmalloc_aligned(PAGE_SIZE, PAGE_SIZE);
-    while (page_table < PAGE_TABLE_ENTRIES)
+    for(i =0; i < PAGE_TABLE_ENTRIES; i++ )
     {
         page_table[i] = 0x00; // set page  table  to nonpresent
         i++;
