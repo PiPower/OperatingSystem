@@ -15,7 +15,7 @@ typedef struct rsdp
     char xsdt_address[8] ;
     uint8_t extended_checksum;
     char reserved[3];
-    // fields below are support ONLY if revision > 0
+    // fields below are supported ONLY if revision > 0
     uint32_t e_lenght ;
     uint32_t e_low_address;
     uint32_t e_hi_address;

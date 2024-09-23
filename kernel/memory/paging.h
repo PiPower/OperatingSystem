@@ -6,8 +6,6 @@
     page table at addr PAGE_TABLE_ADDR
 */
 #define PAGE_SIZE 0x1000
-#define PAGE_DIR_ADDR 0x00100000
-#define PAGE_TABLE_ADDR 0x00101000
-
+#define PAGE_TABLE_ENTRIES 0x400
 
 #endif

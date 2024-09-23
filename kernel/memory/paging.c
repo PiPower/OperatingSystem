@@ -2,6 +2,7 @@
 #include "../types.h"
 #include "../vga.h"
 #include "memory.h"
+#include "memory_internal.h"
 /*
     bit indicies of specified options within PDE/PTE
     every option except for available(4 bit) is 1 bit long
@@ -67,34 +68,30 @@ static void start_paging(uint32_t page_dir)
 
 void setup_paging()
 {
-    page_dir_t* page_dir =  (page_dir_t*) PAGE_DIR_ADDR;
-    page_dir_t* page_dir_bound =  (page_dir_t*)(PAGE_DIR_ADDR + PAGE_SIZE);
-    while (page_dir < page_dir_bound)
+    page_dir_t* page_dir =  (page_dir_t*)heap_kmalloc_aligned(PAGE_SIZE, PAGE_SIZE);
+    
+    int i;
+    for(i =0; i < PAGE_TABLE_ENTRIES; i++ )
     {
-        *page_dir = 0x00; // set page  dir to nonpresent
-        page_dir += 1;
+        page_dir[i] = 0x00; // set page  dir to nonpresent
+        i++;
     }
     
-    page_table_t* page_table = (page_table_t*)PAGE_TABLE_ADDR;
-    page_table_t* page_table_bound = (page_table_t*)(PAGE_TABLE_ADDR + PAGE_SIZE);
-    while (page_table < page_table_bound)
+    page_table_t* page_table = (page_table_t*)heap_kmalloc_aligned(PAGE_SIZE, PAGE_SIZE);
+    while (page_table < PAGE_TABLE_ENTRIES)
     {
-        *page_table = 0x00; // set page  table  to nonpresent
-        page_table += 1;
-    }    
-
-
-    page_dir =  (page_dir_t*) PAGE_DIR_ADDR;
+        page_table[i] = 0x00; // set page  table  to nonpresent
+        i++;
+    }       
     // to keep global state consistent for now disable caching and set write through
-    *page_dir =  SET_D_ADDRESS(PAGE_TABLE_ADDR) | SET_D_WRITE_THROUGH  | SET_D_READ_WRITE | SET_D_PRESENT;
+    page_dir[0] =  SET_D_ADDRESS((uint32_t)page_table) | SET_D_WRITE_THROUGH  | SET_D_READ_WRITE | SET_D_PRESENT;
 
     uint32_t const_flags = 0;
     const_flags = SET_T_WRITE_THROUGH | SET_T_READ_WRITE | SET_T_PRESENT;
-    page_table = (page_table_t*)PAGE_TABLE_ADDR;
 
     // map 1:1 addresses in range 0:0x00102000
     uint32_t base_addr = 0;
-    while (base_addr < PAGE_TABLE_ADDR + PAGE_SIZE)
+    while (base_addr < 0x00102000)
     {
         *page_table = const_flags | SET_T_ADDRESS(base_addr);
 
@@ -102,9 +99,6 @@ void setup_paging()
         page_table += 1;
     }
 
-    page_table -=1 ;
-    *page_table = const_flags | SET_T_ADDRESS(0);
-
-    start_paging(PAGE_DIR_ADDR);
+    start_paging((uint32_t)page_dir);
     return;
 }
