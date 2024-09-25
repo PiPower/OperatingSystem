@@ -1,6 +1,10 @@
 #include "acpi_internal.h"
 #include "../vga.h"
 
+#define SUCCESS 0x01
+#define CHECKSUM_FAIL -0x01
+#define UNSUPPORTED_TABLE -0x02
+
 enum system_tables
 {
     ST_UNUSED = 0,
@@ -19,7 +23,7 @@ static const system_table_handler st_handlers[ST_SIZE] = {
     NULL, process_facp, NULL, NULL, NULL, NULL, NULL
 };
 
-void proces_system_table(sdt_header_t* header)
+int proces_system_table(sdt_header_t* header)
 {
     unsigned int i=0;
     while (system_tables[i] != '\0')
@@ -34,15 +38,32 @@ void proces_system_table(sdt_header_t* header)
         i++;
     }
     
+    if(system_tables[i] == '\0' )
+    {
+        return UNSUPPORTED_TABLE;
+    }
+
     system_table_handler handler = st_handlers[i];
     if(handler != NULL)
     {
         handler(header);
     }
 
+    static unsigned int row = 0;
+    print_at(header->signature[0], row, 0);
+    print_at(header->signature[1], row, 1);
+    print_at(header->signature[2], row, 2);
+    print_at(header->signature[3], row, 3);
+    row++;
+
+    return SUCCESS;
 }
 
 int process_facp(sdt_header_t* header)
 {
-    print_str("FACP", 0, 0);
+    if(!validate_checksum((char*)header, header->lenght))
+    {
+       print_str("Incorrect FACP table", 0, 0);
+       return CHECKSUM_FAIL;
+    }
 }

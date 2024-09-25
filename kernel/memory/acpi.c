@@ -19,14 +19,14 @@ static int mem_cmp(const char* l, const char* r, uint32_t size)
 
 }
 
-static int validate_checksum(rsdp_t* rsdp, uint32_t byte_count)
+// return 1 on succes
+int validate_checksum(char* start_table_ptr, uint32_t byte_count)
 {
-    char* rsdp_base= (char*)rsdp;
     char checksum;
     int i =0;
     while (i < byte_count)
     {
-        checksum += rsdp_base[i++];
+        checksum += start_table_ptr[i++];
     }
 
     return checksum == 0;
@@ -41,9 +41,9 @@ rsdp_t* find_rsdp()
     while (bios_ebda < bios_ebda_upperbound)
     {
         rsdp = (rsdp_t*) bios_ebda;
-        if(mem_cmp("RSD PTR ", rsdp->signature, 8) && validate_checksum(rsdp, RSDP_SIZE))
+        if(mem_cmp("RSD PTR ", rsdp->signature, 8) && validate_checksum((char*)rsdp, RSDP_SIZE))
         {
-            if( rsdp->revision == 0  || (rsdp->revision > 0 && validate_checksum(rsdp, eRSDP_SIZE ) ))
+            if( rsdp->revision == 0  || (rsdp->revision > 0 && validate_checksum((char*)rsdp, eRSDP_SIZE ) ))
             {
                 return rsdp;
             }
@@ -57,9 +57,9 @@ rsdp_t* find_rsdp()
     while (bios_ro < bios_ro_upperbound)
     {
         rsdp = (rsdp_t*) bios_ro;
-        if(mem_cmp("RSD PTR ", rsdp->signature, 8) && validate_checksum(rsdp, RSDP_SIZE))
+        if(mem_cmp("RSD PTR ", rsdp->signature, 8) && validate_checksum((char*)rsdp, RSDP_SIZE))
         {
-            if( rsdp->revision == 0  || (rsdp->revision > 0 && validate_checksum(rsdp, eRSDP_SIZE ) ))
+            if( rsdp->revision == 0  || (rsdp->revision > 0 && validate_checksum((char*)rsdp, eRSDP_SIZE ) ))
             {
                 return rsdp;
             }
