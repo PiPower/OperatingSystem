@@ -11,6 +11,10 @@ char* page_journal; // keeps track of which pages are available in the system
 
 void setup_memory_zones()
 {
+
+    rsdp_t* rsdp =  find_rsdp();
+    parse_system_descriptor_table(rsdp);
+
     page_journal = heap_kmalloc(1048576);
     *page_journal++ = 0xaf;
     *page_journal = 0x99;

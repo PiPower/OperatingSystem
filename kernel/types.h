@@ -2,6 +2,7 @@
 #define TYPES
 
 // header supports only gcc
+#define NULL 0x00
 
 typedef int int32_t;
 typedef short int int16_t;

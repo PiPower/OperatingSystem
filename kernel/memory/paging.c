@@ -93,7 +93,6 @@ void setup_paging()
     while (base_addr < 0x00102000)
     {
         *page_table = const_flags | SET_T_ADDRESS(base_addr);
-
         base_addr += PAGE_SIZE;
         page_table += 1;
     }

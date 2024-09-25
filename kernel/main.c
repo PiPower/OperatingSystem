@@ -15,11 +15,11 @@ void  main()
     int i =0;
     while (msg[i] != '\0')
     {
-        print_at(msg[i], 0, i) ;
+        //print_at(msg[i], 0, i) ;
         i++;
     }
 
-    print_memory_zones(1);
+    //print_memory_zones(1);
 
     while (1)
     {

@@ -1,7 +1,9 @@
 #include "acpi.h"
+#include "acpi_internal.h"
 #include "../vga.h"
 #define RSDP_SIZE 20 // base rsdp
 #define eRSDP_SIZE 36 // extendet rsdp 
+
 
 static int mem_cmp(const char* l, const char* r, uint32_t size)
 {
@@ -76,14 +78,26 @@ void parse_system_descriptor_table( rsdp_t* rsdp)
         print_str("ERROR: xsdt is at address beyond 4GB what is not supported", 16,0);
         while (1){}  
     }
-
-    sdt_header_t* sdt_header = (sdt_header_t* )( rsdp->revision == 0 ? rsdp->rsdt_address : rsdp->e_low_address ); 
-    char* entry = (char*)sdt_header + 36; // first entry 
-    char* entry_mem_bound = (char*)sdt_header + sdt_header->lenght - 36; // first entry 
+  
+    sdt_header_t* sdt_header = (sdt_header_t* )( rsdp->revision == 0 ? rsdp->rsdt_address : rsdp->e_low_address );  
+    // entry is in fact pointer to pointer, yer for ease of increments 
+    // it is defined as ptr to char
+    // NEEDS to be casted before accesing acpi table
+    char* entry = (char*)sdt_header + 36; // first entry, incase of 64 bit it is lower 32 bits of address
+    char* entry_mem_bound = (char*)sdt_header + sdt_header->lenght; 
     uint8_t increment = rsdp->revision == 0 ? 4 : 8;
+
     while (entry < entry_mem_bound)
     {
-        
+        if(increment == 8 && *(uint32_t*)(entry + 4) != 0) //check if ptr lies in 4GB boundary
+        {
+            print_str("ACPI tables cannot be parse as they are out of memory bounds for 4GB", 0, 0);
+            while (1){}
+        }
+
+        proces_system_table(*(sdt_header_t**)entry );
+
+        entry += increment;
     }
 
 }
