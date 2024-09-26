@@ -87,6 +87,7 @@ void parse_system_descriptor_table( rsdp_t* rsdp)
     char* entry_mem_bound = (char*)sdt_header + sdt_header->lenght; 
     uint8_t increment = rsdp->revision == 0 ? 4 : 8;
 
+    int i =0;
     while (entry < entry_mem_bound)
     {
         if(increment == 8 && *(uint32_t*)(entry + 4) != 0) //check if ptr lies in 4GB boundary
@@ -96,7 +97,7 @@ void parse_system_descriptor_table( rsdp_t* rsdp)
         }
 
         proces_system_table(*(sdt_header_t**)entry );
-
+        i++;
         entry += increment;
     }
 

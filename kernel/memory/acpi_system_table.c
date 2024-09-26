@@ -14,13 +14,15 @@ enum system_tables
     ST_HPET,
     ST_MCFG,
     ST_WAET,
+    ST_DSDT,
+    ST_FACS,
     ST_SIZE
 };
 
-static const char* system_tables = "FACPAPICSSDTHPETMCFGWAETSIZE";
+static const char* system_tables = "FACP" "APIC" "SSDT" "HPET" "MCFG" "WAET" "SIZE" "DSDT" "FACS";
 typedef int (*system_table_handler)(sdt_header_t* header);
 static const system_table_handler st_handlers[ST_SIZE] = {
-    NULL, process_facp, NULL, NULL, NULL, NULL, NULL
+    process_facp, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 };
 
 int proces_system_table(sdt_header_t* header)
@@ -37,26 +39,25 @@ int proces_system_table(sdt_header_t* header)
         }
         i++;
     }
-    
+
+    static int j =0;
+    print_at(header->signature[0], j, 0);
+    print_at(header->signature[1], j, 1);
+    print_at(header->signature[2], j, 2);
+    print_at(header->signature[3], j, 3);
+    j++;
+
     if(system_tables[i] == '\0' )
     {
         return UNSUPPORTED_TABLE;
     }
-
     system_table_handler handler = st_handlers[i];
     if(handler != NULL)
     {
-        handler(header);
+        return handler(header);
     }
-
-    static unsigned int row = 0;
-    print_at(header->signature[0], row, 0);
-    print_at(header->signature[1], row, 1);
-    print_at(header->signature[2], row, 2);
-    print_at(header->signature[3], row, 3);
-    row++;
-
-    return SUCCESS;
+    
+    return UNSUPPORTED_TABLE;
 }
 
 int process_facp(sdt_header_t* header)
@@ -66,4 +67,44 @@ int process_facp(sdt_header_t* header)
        print_str("Incorrect FACP table", 0, 0);
        return CHECKSUM_FAIL;
     }
+
+    fadt_t* fadt =  (fadt_t*)header;
+    if(fadt->x_dsdt.high != 0)
+    {
+        print_str("ERROR: dsdt is in memory out of 4GB range", 0 ,0 );
+        printh_uint(fadt->x_dsdt.high , 1, 0, 1);
+        while (1){}
+        
+    }
+    sdt_header_t* dsdt;
+    if(fadt->x_dsdt.low != 0)
+    {
+        dsdt = (sdt_header_t*)fadt->x_dsdt.low;
+    }
+    else
+    {
+        dsdt = (sdt_header_t*)fadt->dsdt;
+    }
+    proces_system_table(dsdt);
+
+
+    if(fadt->x_firmware_ctrl.high != 0 )
+    {
+        print_str("ERROR: facs is in memory out of 4GB range", 0 ,0 );
+        printh_uint(fadt->x_dsdt.high , 1, 0, 1);
+        while (1){}
+        
+    }
+    sdt_header_t* facs;
+    if(fadt->x_firmware_ctrl.low != 0)
+    {
+        facs = (sdt_header_t*)fadt->x_firmware_ctrl.low;
+    }
+    else
+    {
+        facs = (sdt_header_t*)fadt->firmware_ctrl;
+    }
+    proces_system_table(facs);
+
+    return SUCCESS;
 }

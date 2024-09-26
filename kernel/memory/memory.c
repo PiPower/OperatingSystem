@@ -48,7 +48,7 @@ void* allocate_block(uint32_t size, block_header_t* header)
 // if not enough memory is available return 0
 void* heap_kmalloc(uint32_t size)
 {
-    char* curr_pos = heap_base;
+    char* curr_pos = (char*)heap_base;
     block_header_t* header;
     while (curr_pos < heap_top )
     {
@@ -76,7 +76,6 @@ unsigned int can_allocate_page(block_header_t* header)
         return CAN_ALLOCATE_PERFECT_FIT;
     }
     uint32_t page_aligned_addr = (header_block_start + PAGE_SIZE + sizeof(block_header_t)) & 0xFFFFF000; // get addres of the next page
-    uint32_t header_addr = page_aligned_addr - sizeof(block_header_t); // dont forget about header
     if(page_aligned_addr + PAGE_SIZE - header_block_start <= header->block_len)
     {
         return CAN_ALLOCATE;
@@ -87,7 +86,7 @@ unsigned int can_allocate_page(block_header_t* header)
 
 void *heap_kmalloc_aligned(uint32_t size, uint32_t alignment)
 {
-    char* curr_pos = heap_base;
+    char* curr_pos = (char*)heap_base;
     block_header_t* header;
     int ret_code;
     while (curr_pos < heap_top )
@@ -114,7 +113,7 @@ void *heap_kmalloc_aligned(uint32_t size, uint32_t alignment)
     uint32_t page_aligned_addr = (header_block_start + PAGE_SIZE + sizeof(block_header_t)) & 0xFFFFF000;
     // create new block which can be allocated using allocate_block
     block_header_t* new_header = (block_header_t*)(page_aligned_addr - sizeof(block_header_t));
-    new_header->status + BLOCK_UNALLOCATED;
+    new_header->status = BLOCK_UNALLOCATED;
     new_header->block_len = (header_block_start + header->block_len) -(page_aligned_addr - sizeof(block_header_t));
 
     header->block_len = (page_aligned_addr - sizeof(block_header_t)) - header_block_start;
