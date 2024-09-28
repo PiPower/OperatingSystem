@@ -41,10 +41,11 @@ int proces_system_table(sdt_header_t* header)
     }
 
     static int j =0;
-    print_at(header->signature[0], j, 0);
-    print_at(header->signature[1], j, 1);
-    print_at(header->signature[2], j, 2);
-    print_at(header->signature[3], j, 3);
+    printc(header->signature[0]);
+    printc(header->signature[1]);
+    printc(header->signature[2]);
+    printc(header->signature[3]);
+    printc('\n');
     j++;
 
     if(system_tables[i] == '\0' )
@@ -64,15 +65,16 @@ int process_facp(sdt_header_t* header)
 {
     if(!validate_checksum((char*)header, header->lenght))
     {
-       print_str("Incorrect FACP table", 0, 0);
+       print("Incorrect FACP table");
        return CHECKSUM_FAIL;
     }
 
     fadt_t* fadt =  (fadt_t*)header;
+    // dsdt table
     if(fadt->x_dsdt.high != 0)
     {
-        print_str("ERROR: dsdt is in memory out of 4GB range", 0 ,0 );
-        printh_uint(fadt->x_dsdt.high , 1, 0, 1);
+        print("ERROR: dsdt is in memory out of 4GB range");
+        printh_uint(fadt->x_dsdt.high, 1);
         while (1){}
         
     }
@@ -87,11 +89,11 @@ int process_facp(sdt_header_t* header)
     }
     proces_system_table(dsdt);
 
-
+    // facs table
     if(fadt->x_firmware_ctrl.high != 0 )
     {
-        print_str("ERROR: facs is in memory out of 4GB range", 0 ,0 );
-        printh_uint(fadt->x_dsdt.high , 1, 0, 1);
+        print("ERROR: facs is in memory out of 4GB range" );
+        printh_uint(fadt->x_dsdt.high, 1);
         while (1){}
         
     }

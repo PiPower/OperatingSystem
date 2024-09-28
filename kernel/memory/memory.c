@@ -155,7 +155,7 @@ void setup_heap()
     
     if( addr_length == 0)
     {
-        print_str("ERROR: no free memory for heap", 1, 0);
+        print("ERROR: no free memory for heap");
         while (1){}
     }
     heap_base = base_addr_of_largest_chunk;

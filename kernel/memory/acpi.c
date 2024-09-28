@@ -75,7 +75,7 @@ void parse_system_descriptor_table( rsdp_t* rsdp)
 {
     if(rsdp->revision > 0 &&  rsdp->e_hi_address > 0 )
     {
-        print_str("ERROR: xsdt is at address beyond 4GB what is not supported", 16,0);
+        print("ERROR: xsdt is at address beyond 4GB what is not supported");
         while (1){}  
     }
   
@@ -92,7 +92,7 @@ void parse_system_descriptor_table( rsdp_t* rsdp)
     {
         if(increment == 8 && *(uint32_t*)(entry + 4) != 0) //check if ptr lies in 4GB boundary
         {
-            print_str("ACPI tables cannot be parse as they are out of memory bounds for 4GB", 0, 0);
+            print("ACPI tables cannot be parse as they are out of memory bounds for 4GB");
             while (1){}
         }
 

@@ -9,9 +9,9 @@
 #define MAX_ROWS 25
 #define MAX_COLS 80
 
-
-void print_at(char c, uint8_t row, uint8_t col);
-void printh_uint(uint32_t number, uint8_t start_row, uint8_t start_column, char add_prefix);
-void print_str(const char* str, uint8_t start_row, uint8_t start_column);
+void printc(char c);
+void clear_screen();
+void printh_uint(uint32_t number, char add_prefix);
+void print(const char* str);
 void print_memory_zones(uint8_t start_row);
 #endif

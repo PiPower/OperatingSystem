@@ -3,21 +3,17 @@
 #include "vga.h"
 #include "./memory/memory.h"
 
-const char* msg = "Hello world from THE kernel!!";
+const char* msg = "Hello world from THE kernel!!\n";
 
 void  main() 
 {
+    clear_screen(); // usefull for emulator like qemu that edits video mem
+    print(msg);
     init_memory_subsystem();
     setup_paging();
     //char* xd =(char* ) PAGE_TABLE_ADDR;
     //*xd = 0xaa;
 
-    int i =0;
-    while (msg[i] != '\0')
-    {
-        //print_at(msg[i], 0, i) ;
-        i++;
-    }
 
     //print_memory_zones(1);
 

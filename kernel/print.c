@@ -12,72 +12,92 @@ const char* addr_desc_type[] ={
     " AddressRangeUnusuable",
     " AddressRangeDisabled"
 };
-void print_at(char c, uint8_t row, uint8_t col)
+
+int curr_row = 0;
+int curr_col = 0;
+char* video_mem = (char*)CHAR_ADDRESS;
+
+void scroll()
 {
-    char* video_mem = (char*)CHAR_ADDRESS;
-    video_mem[2 * (row * MAX_COLS + col)] = c;
+    int y, x;
+    for(y=0; y < MAX_ROWS - 1; y++)
+    {
+        for(x =0; x < MAX_COLS; x++)
+        {
+            video_mem[2 * (y * MAX_COLS + x)] =  video_mem[2 * ((y + 1) * MAX_COLS + x)];
+        }
+    }   
+
+    for(x =0; x < MAX_COLS; x++)
+    {
+        video_mem[2 * (y * MAX_COLS + x)] =  ' '; // clear next row
+    }
+
+}
+void printc(char c)
+{
+    if( curr_row >= MAX_ROWS)
+    { 
+        curr_row = MAX_ROWS - 1;
+        scroll();
+    }
+    if( c == '\n')
+    {
+        curr_col = 0;
+        curr_row++;
+        return;
+    }
+
+    video_mem[2 * (curr_row * MAX_COLS + curr_col)] = c;
+    curr_col++;
+    if( curr_col >= MAX_COLS)
+    { 
+        curr_col = 0; 
+        curr_row++;
+    }
+}
+
+void clear_screen()
+{
+    int y, x;
+    for(y =0; y < MAX_ROWS; y++)
+    {
+        for(x =0; x < MAX_COLS; x++)
+        {
+            video_mem[2 * (y * MAX_COLS + x)] = ' ';
+        }
+    }
+    curr_col = 0;
+    curr_row = 0;
 }
 
 // print number in hex
-void printh_uint(uint32_t number, uint8_t start_row, uint8_t start_column, char add_prefix)
+void printh_uint(uint32_t number, char add_prefix)
 {
-    uint8_t row = start_row;
-    uint8_t col = start_column;
     if(add_prefix)
     {
-        col += 2;
-        print_str("0x", start_row , start_column);
+        print("0x");
     }
 
-    if( col >= MAX_COLS){ col = 0; row++;}
-    if( row >= MAX_ROWS){ row = 0;}
     int i =0;
     while (i < 8 )
     {
         uint32_t index = ((number << (i * 4) )& 0xF0000000) >> 28;
 
         char c = numbers[index];
-        print_at(c, row, col);
-
-        col++;
-        if( col >= MAX_COLS)
-        {
-            col = 0;
-            row++;
-            if( row >= MAX_ROWS)
-            {
-                row = 0;
-            }
-        }
+        printc(c);
         i++;
     }
     
 }
 
 
-void print_str(const char* str, uint8_t start_row, uint8_t start_column)
+void print(const char* str)
 {
-
-    uint8_t row = start_row;
-    uint8_t col = start_column;
-    if( col >= MAX_COLS){ col = 0; row++;}
-    if( row >= MAX_ROWS){ row = 0;}
-
     int i =0;
     while (str[i] != '\0' )
     {
-        print_at(str[i], row, col);
-
-        col++;
-        if( col >= MAX_COLS)
-        {
-            col = 0;
-            row++;
-            if( row >= MAX_ROWS)
-            {
-                row = 0;
-            }
-        }
+        printc(str[i]);
         i++;
     }
 }
@@ -92,29 +112,28 @@ void print_memory_zones(uint8_t start_row)
     ptr += 0x10000;
     memory_map_entry_t* zone_entries = (memory_map_entry_t*)ptr;
 
-    uint8_t start_column = 0;
-    print_str("There are ", start_row, start_column);
-    printh_uint(count, start_row, start_column + 10, 1);
-    print_str(" memory zones.", start_row, start_column + 20 );
+    print("There are ");
+    printh_uint(count, 1);
+    print(" memory zones");
 
     int i;
     for(i =0; i < count; i++)
     {
-        printh_uint(zone_entries[i].high_base_address, start_row + i + 1, start_column, 1);
-        print_at(':', start_row + i + 1, start_column + 10);
-        printh_uint(zone_entries[i].low_base_address, start_row + i + 1, start_column + 11, 0);
-        print_at('-', start_row + i + 1, start_column + 19);
-        printh_uint(zone_entries[i].high_length, start_row + i + 1, start_column + 20, 1);
-        print_at(':', start_row + i + 1, start_column + 30);
-        printh_uint(zone_entries[i].low_length, start_row + i + 1, start_column + 31, 0);
+        printh_uint(zone_entries[i].high_base_address, 1);
+        printc(':');
+        printh_uint(zone_entries[i].low_base_address, 0);
+        printc('-');
+        printh_uint(zone_entries[i].high_length, 1);
+        printc(':');
+        printh_uint(zone_entries[i].low_length, 0);
 
         if(zone_entries[i].range_type > 0 && zone_entries[i].range_type <= AddressRangeDisabled)
         {
-            print_str(addr_desc_type[zone_entries[i].range_type], start_row + i + 1, start_column + 39 );
+            print(addr_desc_type[zone_entries[i].range_type]);
         }
         else
         {
-            print_str(addr_desc_type[0], start_row + i + 1, start_column + 39 );
+            print(addr_desc_type[0]);
         }
     }
 
