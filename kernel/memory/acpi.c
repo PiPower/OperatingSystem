@@ -5,6 +5,8 @@
 #define eRSDP_SIZE 36 // extendet rsdp 
 
 
+extern uint8_t mcfg_found; // defined in acpi_system_table.c
+
 static int mem_cmp(const char* l, const char* r, uint32_t size)
 {
     uint32_t i = 0;
@@ -101,6 +103,11 @@ void parse_system_descriptor_table( rsdp_t* rsdp)
         entry += increment;
     }
 
+    if(mcfg_found == 0)
+    {
+        print("ERROR: Could not find mcfg acpi table, PCI cannot be configured");
+        while (1){}
+    }
 }
 
 /*

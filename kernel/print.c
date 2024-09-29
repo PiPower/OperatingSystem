@@ -72,7 +72,7 @@ void clear_screen()
 }
 
 // print number in hex
-void printh_uint(uint32_t number, char add_prefix)
+void printh(uint32_t number, char add_prefix)
 {
     if(add_prefix)
     {
@@ -113,19 +113,19 @@ void print_memory_zones(uint8_t start_row)
     memory_map_entry_t* zone_entries = (memory_map_entry_t*)ptr;
 
     print("There are ");
-    printh_uint(count, 1);
+    printh(count, 1);
     print(" memory zones");
 
     int i;
     for(i =0; i < count; i++)
     {
-        printh_uint(zone_entries[i].high_base_address, 1);
+        printh(zone_entries[i].high_base_address, 1);
         printc(':');
-        printh_uint(zone_entries[i].low_base_address, 0);
+        printh(zone_entries[i].low_base_address, 0);
         printc('-');
-        printh_uint(zone_entries[i].high_length, 1);
+        printh(zone_entries[i].high_length, 1);
         printc(':');
-        printh_uint(zone_entries[i].low_length, 0);
+        printh(zone_entries[i].low_length, 0);
 
         if(zone_entries[i].range_type > 0 && zone_entries[i].range_type <= AddressRangeDisabled)
         {

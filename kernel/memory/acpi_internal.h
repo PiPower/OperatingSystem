@@ -58,7 +58,9 @@ char signature[4];
     char unused_part_2[120];
 } fadt_t;
 
+
 int proces_system_table(sdt_header_t* header);
 int process_facp(sdt_header_t* header);
+int process_mcfg(sdt_header_t* header);
 int validate_checksum(char* start_table_ptr, uint32_t byte_count);
 #endif

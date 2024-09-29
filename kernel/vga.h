@@ -11,7 +11,7 @@
 
 void printc(char c);
 void clear_screen();
-void printh_uint(uint32_t number, char add_prefix);
+void printh(uint32_t number, char add_prefix);
 void print(const char* str);
 void print_memory_zones(uint8_t start_row);
 #endif

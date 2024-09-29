@@ -124,11 +124,11 @@ void *heap_kmalloc_aligned(uint32_t size, uint32_t alignment)
 void setup_heap()
 {
     char* ptr = (char*)&map_entries_size;
-    ptr+= 0x10000;
+    ptr+= 0x10000; // offset pointer to its actual position
     uint16_t count = *(uint16_t*)ptr;
 
     ptr = (char*)&map_entries;
-    ptr += 0x10000;
+    ptr += 0x10000; // offset pointer to its actual position
     memory_map_entry_t* zone_entries = (memory_map_entry_t*)ptr;
 
 
