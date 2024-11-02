@@ -89,6 +89,7 @@ int process_facp(sdt_header_t* header)
     {
         dsdt = (sdt_header_t*)fadt->dsdt;
     }
+    
     proces_system_table(dsdt);
 
     // facs table

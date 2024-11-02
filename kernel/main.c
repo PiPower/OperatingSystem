@@ -9,6 +9,7 @@ void  main()
 {
     clear_screen(); // usefull for emulator like qemu that edits video mem
     print(msg);
+    print_memory_zones();
     init_memory_subsystem();
     setup_paging();
     //char* xd =(char* ) PAGE_TABLE_ADDR;

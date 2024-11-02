@@ -11,5 +11,6 @@
 #define KERNELLOADER_STACK_TOP  0xffff
 #define KERNELLOADER_OFFSET 0x0
 
-
+#define __KERNEL_CS 0x08
+#define __KERNEL_DS 0x10
 #endif 

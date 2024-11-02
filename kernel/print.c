@@ -102,7 +102,7 @@ void print(const char* str)
     }
 }
 
-void print_memory_zones(uint8_t start_row)
+void print_memory_zones()
 {
     char* ptr = (char*)&map_entries_size;
     ptr+= 0x10000;
@@ -114,7 +114,7 @@ void print_memory_zones(uint8_t start_row)
 
     print("There are ");
     printh(count, 1);
-    print(" memory zones");
+    print(" memory zones\n");
 
     int i;
     for(i =0; i < count; i++)
@@ -130,10 +130,12 @@ void print_memory_zones(uint8_t start_row)
         if(zone_entries[i].range_type > 0 && zone_entries[i].range_type <= AddressRangeDisabled)
         {
             print(addr_desc_type[zone_entries[i].range_type]);
+            printc('\n');
         }
         else
         {
             print(addr_desc_type[0]);
+            printc('\n');
         }
     }
 

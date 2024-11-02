@@ -102,7 +102,7 @@ _go_to_pm:
 
     .byte 0x66, 0xea		# ljmp ptr16:32
     .long (_32bit_mode + KERNELLOADER_MEM_BASE)
-    .word 8
+    .word __KERNEL_CS
  
 _failure:
     movb $0x0e, %ah
@@ -140,7 +140,7 @@ map_entries:
 
 _32bit_mode:
     # set segments to data segment
-    movw $16, %ax
+    movw $__KERNEL_DS, %ax
 	movw %ax, %ds	
 	movw %ax, %es
     movw %ax, %fs
@@ -150,6 +150,8 @@ _32bit_mode:
     movl $0x90000, %esp
     movl $0x90000, %ebp
     
+    pushl $0    
+    popfl # clear EFLAGS
     movl $main, %eax
     call %eax
 
