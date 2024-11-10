@@ -48,13 +48,14 @@ void printc(char c)
         return;
     }
 
-    video_mem[2 * (curr_row * MAX_COLS + curr_col)] = c;
-    curr_col++;
     if( curr_col >= MAX_COLS)
     { 
         curr_col = 0; 
         curr_row++;
     }
+
+    video_mem[2 * (curr_row * MAX_COLS + curr_col)] = c;
+    curr_col++;
 }
 
 void clear_screen()

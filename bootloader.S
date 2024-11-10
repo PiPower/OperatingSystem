@@ -23,7 +23,7 @@ _run:
 _load_kernelloader:
     movw $KERNELLOADER_SEGMENT, %ax
     movw %ax, %es 
-    movw $0x00, %bx # set bs to zero so es:bx  0x10000
+    movw $0x00, %bx # set bx to zero so that es:bx  0x10000
     movb $0x02, %ah # BIOS read sector function
     movb $KERNELLOADER_SECTOR_COUNT, %al # Read sector count
     movb $0x00, %ch # Select cylinder 0

@@ -4,20 +4,14 @@
 #include "../../memory_mappings.h"
 #include "memory_internal.h"
 #include "paging.h"
-
+#include "../../memory_layout.h"
 const char* heap_base;
 const char* heap_top;
 char* page_journal; // keeps track of which pages are available in the system
 
-void setup_memory_zones()
+void setup_page_journal()
 {
-
-    rsdp_t* rsdp =  find_rsdp();
-    parse_system_descriptor_table(rsdp);
-
     page_journal = heap_kmalloc(1048576);
-    *page_journal++ = 0xaf;
-    *page_journal = 0x99;
 }
 
 void* allocate_block(uint32_t size, block_header_t* header)
@@ -160,6 +154,11 @@ void setup_heap()
     }
     heap_base = base_addr_of_largest_chunk;
     heap_top = base_addr_of_largest_chunk + addr_length;
+    if((uint32_t)heap_base == KERNELLOADER_MEM_BASE)
+    {
+        // SAVE MEMORY FOR THE KERNEL ITSELF
+        heap_base += KERNELLOADER_SIZE; 
+    }
 
     block_header_t* heap_curr;
     heap_curr = (block_header_t*) base_addr_of_largest_chunk;
@@ -169,7 +168,7 @@ void setup_heap()
 void init_memory_subsystem()
 {
     setup_heap();
-    setup_memory_zones();
+    setup_page_journal();
 }
 
 void *kmalloc()

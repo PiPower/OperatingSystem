@@ -6,7 +6,7 @@
 .extern main
 .global _start
 _start:
-    #set segment registers
+    # set segment registers
     movw $KERNELLOADER_SEGMENT, %ax
     movw %ax, %ds
     movw %ax, %es
@@ -153,5 +153,5 @@ _32bit_mode:
     pushl $0    
     popfl # clear EFLAGS
     movl $main, %eax
-    call %eax
+    call *%eax
 
